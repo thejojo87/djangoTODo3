@@ -16,14 +16,14 @@
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
         <li>
-        <a href="{% url 'home' %}" title="个人信息"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}</a>
+        <a href="{% url 'lists:userinfo' %}" title="个人信息"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}</a>
         </li>
         <li>
-        <a href="{% url 'home' %}" title="退出">退出    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
+        <a href="{% url 'lists:logout' %}" title="退出">退出    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
         </li>
         {% else %}
-        <li class="sign-in-up"><a href="{% url 'home' %}">注册 <span class="sr-only"></span></a></li>
-            <li class="sign-in-up"><a href="{% url 'home' %}">登陆 <span class="sr-only"></span></a></li>
+        <li class="sign-in-up"><a href="{% url 'lists:register' %}">注册 <span class="sr-only"></span></a></li>
+            <li class="sign-in-up"><a href="{% url 'lists:login' %}">登陆 <span class="sr-only"></span></a></li>
         {% endif %}
       </ul>
     </div>

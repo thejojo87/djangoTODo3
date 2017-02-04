@@ -24,12 +24,13 @@
 {% block navabar %}
     {% include "navbar.html"%}
 {% endblock %}
-{#<div class="container">#}
-{#    <div class="row">#}
-{#        <div class="col-md-6 col-md-offset-3 jumbotron">#}
-{#            <div class="text-center">#}
-{##}
-{#                <h1>{% block header_text %}{% endblock %}</h1>#}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 jumbotron">
+            <div class="text-center">
+
+                <h1>{% block header_text %}{% endblock %}</h1>
+                {% block form %}{% endblock %}
 {#                {% block content %} {% endblock %}#}
 {#                {% block todos %}#}
 {#                <form method="POST" action="{% block form_action %}{% endblock %}">#}
@@ -51,23 +52,23 @@
 {#                    {% endif %}#}
 {#                </form>#}
 {#                {% endblock %}#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
+            </div>
+        </div>
+    </div>
 {#    <div class="row">#}
 {#        <div class="col-md-6 col-md-offset-3">#}
 {#            {% block table %}#}
 {#            {% endblock %}#}
 {#        </div>#}
 {#    </div>#}
-{#    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->#}
-{#    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>#}
-{#    <!-- Include all compiled plugins (below), or include individual files as needed -->#}
-    {#    <script src="js/bootstrap.min.js"></script>#}
-{#    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->#}
-{#    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"#}
-{#            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"#}
-{#            crossorigin="anonymous"></script>#}
-{#</div>#}
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+{#        <script src="js/bootstrap.min.js"></script>#}
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</div>
 </body>
 </html>
