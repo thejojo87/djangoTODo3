@@ -333,5 +333,281 @@ def userinfo(request):
 但是重复检测，并没有做到。
 
 
+# Day3
+## 数据库里保存Item数据模块
+
+Item模块，首先需要定义Item的model。
+然后需要ItemForm的模型。
+然后home主页有输入Item的表单的html。
 
 
+最后就是下面更新表单的列表。
+
+### 1.ItemModel
+
+```python
+# Item待办清单
+class Item(models.Model):
+    text = models.TextField(max_length=1000,default="")
+    belong_to = models.ForeignKey(User,default=None)
+
+    class Meta:
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.text
+```
+
+### 2.后台添加监控
+\admin.py
+```python
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('text','belong_to',)
+
+admin.site.register(Item,ItemAdmin)
+```
+
+### 3.定义ItemForm
+
+\forms.py
+```python
+# ItemForm
+class ItemForm(forms.models.ModelForm):
+
+    class Meta:
+        model = Item
+        fields = {'text',}
+        widgets = {
+            'text': forms.fields.TextInput(attrs={
+                'placeholder': 'Enter a to-do item',
+                'class': 'form-control input-lg',
+            }),
+        }
+        error_messages = {
+            'text' : {'required': EMPTY_LIST_ERROR }
+        }
+
+    def save(self, belong_to):
+        self.instance.belong_to = belong_to
+        return super().save()
+```
+
+### 4.编写html文件
+
+```html
+{% block form %}
+    <form method="POST" action="{% url 'home' %}">
+
+        {{ form.text }}
+
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="form-group has-error">
+                <div class="help-block ">
+                    {{ form.text.errors }}
+                </div>
+            </div>
+
+        {% endif %}
+    </form>
+{% endblock %}
+```
+
+### 5.建立url
+上面建立了一个html里有action，也就是要把POST发送到哪里。
+所以需要一个url，对应到view函数。
+也就是一个new_item RESTAPI。
+
+```python
+url(r'^new$', list_views.new_item, name="new_item"),
+```
+
+### 6.修改homePage的view函数
+
+以前只是发送了home.html，这次要加上form
+
+### 7.写new_item的view函数
+
+item是外链到user模型的。
+如果像平常一样，create一个Item模型。然后模型.save()
+是不可能的，会告诉你，XXX_id不能为null。
+这就是因为新建的时候，belong_to_id无法获得的。
+正确的方法是用form.save()
+这个会自动生成一个id。
+
+http://stackoverflow.com/questions/27577943/django-1048-column-user-id-cannot-be-null
+
+
+```python
+def new_item(request):
+    form = ItemForm(data=request.POST)
+    if form.is_valid():
+        user = form.save(commit=False)
+        user.belong_to = User.objects.get(username=request.user.username)
+        user.text = request.POST['text']
+        user.save()
+
+    return HttpResponseRedirect(reverse('home'))
+```
+
+## 显示用户的Item列表模块
+
+用户列表直接在home主页上显示。
+分为用户登陆后和用户没登陆两种情况。
+用户没登陆的时候，应该新建一个临时的，然后注销。
+不过不知道该怎么办，先跳过去。
+
+用户登陆，用 if request.user.username != "":来判断。
+需要新建一个ItemListForm，然后从数据库查询用户的Item，
+最后form保存。传送到html页面。
+
+新建ItemListForm 的model。
+
+### 1.新建ItemListForm
+
+```python
+# ItemListForm
+class ItemListForm(ItemForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+```
+
+### 2.写view函数
+get方法只能返回一个。所以需要用filter来获取多个记录。
+返回的数据是QuerySet格式。
+<QuerySet [<Item: first test1>, <Item: asdfdfgdfg>]>
+
+怎么传送过去呢？
+第一个方式：
+form方式，传送form过去。
+
+第二个直接返回list，在那里循环渲染。
+
+先试一下第一个吧。
+获得的数据格式，需要先转换成list。
+其实我后来发现了。
+完全没必要转换。直接用就可以了。
+而且list转换，还丢失细节。
+下面有改好的版本。
+
+
+```python
+# 主页
+def home_page(request):
+    print(request.user.username)
+    if request.user.username != "":
+        # 用户登陆了
+        Item_ = Item.objects.filter(belong_to__username=request.user.username)
+        itemlist_ = list(Item_)
+        return render(request, 'home.html',
+                  {'form': ItemForm(),'ItemList':itemlist_}
+                  )
+    else:
+        return render(request, 'home.html',
+                  {'form': ItemForm()}
+                  )
+```
+
+
+### 3.写html文件
+
+就是添加了一个 table block
+
+```html
+{% block table %}
+<table id="id_list_table" class="table">
+    {% for item in ItemList %}
+        <tr>
+            <td>{{ forloop.counter }}: {{ item.text }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+```
+
+
+### 4.修改cssbug
+
+不知道为什么css文件无法显示。
+后来发现，是要在lists/static/list.css才可以。
+
+
+## 用户没有登陆的时候模块（TODO）
+
+好好想一想，用户没登陆的时候，输入todo，数据并没有任何处理。
+该怎么做呢？
+是不是需要session呢？
+
+## 删除todo模块
+
+这里有个简单的示范-思路就是添加一个超链接，view关联delete函数。最后redirect刷新。
+
+
+http://blog.csdn.net/shanliangliuxing/article/details/7564571
+
+### 1.添加删除的url
+
+```python
+url(r'^delete/(?P<id>[0-9]+)$', list_views.delete_item, name="delete_item"),
+```
+
+正则表达式要写好。
+delete后面的任意数字会以id参数，传递给view函数。
+
+### 2.添加删除的delete视图
+
+有一个问题，视图怎么知道要删除的是哪一个呢？
+有两个思路：
+第一个是，按照username重新查一遍，然后传入的id第几个来删掉。
+第二个思路是，修改上面的home函数。
+原来的QuerySet，如果强行改成数组，那么无法得知其item_id了。
+把这个传送进去。
+
+两个思路都有问题。
+第一个，特别繁琐，还不如item.id直接。
+第二个，原来的QuerySet本身就是list。没必要改成list。
+直接把QuerySet传入进html里就可以了。
+而且可以直接调用item.id
+
+最后还是选了第二个思路。
+
+先修改了上面的home函数
+然后写了delete函数。
+
+```python
+# 主页
+def home_page(request):
+    if request.user.username != "":
+        # 用户登陆了
+        Item_ = Item.objects.filter(belong_to__username=request.user.username)
+        return render(request, 'home.html',
+                  {'form': ItemForm(),'ItemList':Item_}
+                  )
+    else:
+        return render(request, 'home.html',
+                  {'form': ItemForm()}
+                  )
+
+ # 删除的POST请求，并不指向特定页面
+def delete_item(request,id):
+    item_to_delete = get_object_or_404(Item,pk=int(id))
+    item_to_delete.delete()
+    return HttpResponseRedirect(reverse('home'))
+```
+
+需要注意一下iaiget_object_or_404 函数n'shun'shn'sn和默认的的pk，很有用。
+
+### 3.添加delete的按钮
+
+其实就是个超链接，看起来像个按钮而已。
+正则表达式要写好。
+
+```html
+<td>{{ forloop.counter }}: {{ item.text }}<a href="lists\delete\{{ item.id }}"  class="btn btn-primary btn-lg" role="button">删除</a></td>
+```
+
+
+
+## 编写swift客户端

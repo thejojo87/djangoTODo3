@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
-    <link href="/static/base.css" rel="stylesheet" media="screen">
+    <link href="/static/list.css" rel="stylesheet" media="screen">
     <!-- Bootstrap -->
     {#    <link href="css/bootstrap.min.css" rel="stylesheet">#}
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
@@ -31,7 +31,8 @@
 
                 <h1>{% block header_text %}{% endblock %}</h1>
                 {% block form %}{% endblock %}
-{#                {% block content %} {% endblock %}#}
+
+                                {% block table %} {% endblock %}
 {#                {% block todos %}#}
 {#                <form method="POST" action="{% block form_action %}{% endblock %}">#}
 {##}

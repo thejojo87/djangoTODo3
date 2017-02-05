@@ -19,4 +19,17 @@ class UserInfo(models.Model):
 
         return self.belong_to.username
 
+# Item待办清单
+class Item(models.Model):
+    text = models.TextField(max_length=1000,default="")
+    belong_to = models.ForeignKey(User,default=None)
+
+    class Meta:
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.text
+
+    def return_id(self):
+        return self.id
 

@@ -10,10 +10,12 @@
       <a href="{% url 'home' %}" class="navbar-brand">Home Page</a>
     </div>
     <div id="navbar" class="collapse navbar-collapse bs-navbar-collapse">
+    {% if user.is_authenticated %}
       <ul class="nav navbar-nav">
         <li><a href="/admin">Admin Page</a></li>
       </ul>
-      <ul class="nav navbar-nav navbar-right">
+      {% endif %}
+        <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
         <li>
         <a href="{% url 'lists:userinfo' %}" title="个人信息"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}</a>

@@ -1,6 +1,28 @@
 {% extends 'base.html' %}
-    {% block title %}To-Do lists Home Page{% endblock %}
-
+{% block title %}To-Do lists Home Page{% endblock %}
 {% block header_text %}Your To-Do Home Page{% endblock %}
+{% block form %}
+    <form method="POST" action="{% url 'lists:new_item' %}">
+        {{ form.text }}
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="form-group has-error">
+                <div class="help-block ">
+                    {{ form.text.errors }}
+                </div>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}
 
-{% block form_action %}{% url 'home' %}{% endblock %}
+{% block table %}
+<table id="id_list_table" class="table">
+    {% for item in ItemList %}
+        <tr>
+            <td>{{ forloop.counter }}: {{ item.text }}<a href="lists\delete\{{ item.id }}"  class="btn btn-primary btn-lg" role="button">删除</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}
