@@ -19,7 +19,7 @@
 <table id="id_list_table" class="table">
     {% for item in ItemList %}
         <tr>
-            <td>{{ forloop.counter }}: {{ item.text }}<a href="lists\delete\{{ item.id }}"  class="btn btn-primary btn-lg" role="button">删除</a></td>
+            <td>{{ forloop.counter }}: {{ item.text }}<a href="lists\update\{{ item.id }}"  class="btn btn-primary btn-lg" role="button">修改</a><a href="lists\delete\{{ item.id }}"  class="btn btn-primary btn-lg" role="button">删除</a></td>
         </tr>
     {% endfor %}
 </table>

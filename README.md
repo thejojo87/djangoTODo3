@@ -11,6 +11,9 @@ http://www.obeythetestinggoat.com/pages/book.html#toc
 
 https://github.com/hjwp/book-example
 
+删除和修改参考了这篇帖子
+
+http://blog.csdn.net/shanliangliuxing/article/details/7564571
 
 # 目标
 我想要做什么？
@@ -610,4 +613,82 @@ def delete_item(request,id):
 
 
 
+## 修改清单模块
+
+### 1.form模块
+
+form模块沿用ItemForm就可以了。
+
+### 2.添加url-update
+
+```python
+url(r'^update/(?P<id>[0-9]+)$', list_views.update_item, name="update_item"),
+```
+
+### 3.写update-view函数
+
+```python
+# 修改Item，如果是get那么指向修改的html，如果是post就运算
+def update_item(request,id):
+    item_to_update = get_object_or_404(Item,pk=int(id))
+    data = {'belong_to': request.user.username, 'text': item_to_update.text}
+    form = ItemForm(data)
+    print(form)
+    if request.method == "POST":
+        item_to_update.text = request.POST['text']
+        item_to_update.save()
+        return HttpResponseRedirect(reverse('home'))
+    return render(request,'registration/update.html',{"form":form, "Item":item_to_update})
+```
+
+### 4.写html文件
+
+```html
+{% extends 'base.html' %}
+{% block title %}To-Do lists Update Page{% endblock %}
+{% block header_text %}Your To-Do Update Page{% endblock %}
+{% block form %}
+    <form method="POST" action="{{ Item.id }}">
+        {{ form.text }}
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="form-group has-error">
+                <div class="help-block ">
+                    {{ form.text.errors }}
+                </div>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}
+```
+
+## RestfulAPI设置
+
+djangorestframework
+使用这个pip install
+
+https://darkcooking.gitbooks.io/django-rest-framework-cn/content/chapter0.html
+
+https://github.com/tomchristie/rest-framework-tutorial
+
+这就是github。
+
+看了个demo，就是，先建一个
+serializers.py里，建model的两个序列化。
+然后views里，编写视图文件，并且添加url。
+就变成了json格式的了。
+
+貌似和pycharm没关系？
+如果要消化这些恐怕需要一天时间吧。
+
+
+
+
+
+## 第三方登陆
+
+
 ## 编写swift客户端
+
+想法是大概写成clear类型的。
+

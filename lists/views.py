@@ -37,6 +37,7 @@ def register_page(request):
             login(request,user)
             # return HttpResponseRedirect('/')
             return HttpResponseRedirect(reverse('home'))
+
     context['form'] = form
     return render(request,'registration/register.html',context)
 
@@ -74,3 +75,15 @@ def delete_item(request,id):
     item_to_delete = get_object_or_404(Item,pk=int(id))
     item_to_delete.delete()
     return HttpResponseRedirect(reverse('home'))
+
+# 修改Item，如果是get那么指向修改的html，如果是post就运算
+def update_item(request,id):
+    item_to_update = get_object_or_404(Item,pk=int(id))
+    data = {'belong_to': request.user.username, 'text': item_to_update.text}
+    form = ItemForm(data)
+    print(form)
+    if request.method == "POST":
+        item_to_update.text = request.POST['text']
+        item_to_update.save()
+        return HttpResponseRedirect(reverse('home'))
+    return render(request,'registration/update.html',{"form":form, "Item":item_to_update})
